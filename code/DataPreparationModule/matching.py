@@ -23,9 +23,10 @@ def get_dicom_files_for(path2pid):
     path_2_dicoms = get_path_to_pid_dicoms(path2pid)
     return [file for file in os.listdir(path_2_dicoms) if not ('._' in file) ]
 
-def get_year_from(year_folder):
+def get_year_from(year_foldername: str):
     """
     """
+    return int(year_foldername.split('-')[2])
 
 
 class PidHandler():
@@ -39,6 +40,7 @@ class PidHandler():
         self.root = root
         self.path_to_dicoms = get_path_pid_dicoms(self.root)
         self.dicoms = get_dicom_files_for(self.root)
+        self.get_year_dict()
 
     def get_year_dict(self):
         """
@@ -48,7 +50,9 @@ class PidHandler():
                 ]
         assert len(year_directories) > 0, ('No year folders detected for',
                 'pid {}'.format(pid))
-
+        self.year_dict = {
+                get_year_from(year_foldername): year_foldername for year_foldername in year_directories
+                }
 
     def get_slice(slice_num):
         """
