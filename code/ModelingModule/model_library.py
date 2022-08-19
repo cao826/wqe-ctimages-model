@@ -14,6 +14,7 @@ class NlstModel(nn.Module):
             model='resnet101',
             pretrained=True
         )
+        self.get_number_backbone_params()
         ### change ReLU to leakyReLU ###
         for name, module in self.backbone.named_modules():
             if hasattr(module, 'relu'):
@@ -31,7 +32,24 @@ class NlstModel(nn.Module):
             out_features=2
         )
         self.dropout = nn.Dropout(p=.5)
-    
+    def get_number_backbone_params(self):
+        """Returns the number of params the backbone has"""
+        count = 0
+        for param in self.backbone.parameters():
+            count += 1
+        self.backbone_params_number = count
+
+    def freeze_all_params_except(self, last_n_layers):
+        """Freezes all params except the last N layers"""
+        too_large_error = 'More params to unfreeze than number of parameters'
+        assert last_n_layers < self.backbone_params_number, too_large_error
+        unfreeze_threshold = self.backbone_params_number - last_n_layers
+        for i, param in enumerate(self.backbone.parameters()):
+            if i >= unfreeze_threshold:
+                continue
+            else:
+                param.requires_grad = False
+
     def forward(self, x, clinical_info):
         """
         """
