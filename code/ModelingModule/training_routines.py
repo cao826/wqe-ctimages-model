@@ -21,57 +21,40 @@ def train_on_batch(batch, model, loss_fn, optimizer):
 
     return loss.item()
 
-def train_one_epoch(model, training_loader, loss_fn, optimizer): #COMPLETE
+def print_training_loss(loss_list, epoch_number=None):
+    """Print the mean batch loss on the training set"""
+    mean_loss = sum(loss_list) / len(loss_list)
+    if epoch_number:
+        print(f"Training loss on epoch {epoch_number}: {mean_loss}")
+    else:
+        print(f"Training loss: {mean_loss}")
+
+def train_one_epoch(model, training_loader, 
+                    loss_fn, optimizer, epoch_number=None):
     """Trains the model for one epoch"""
     losses = []
-
-    # Here, we use enumerate(training_loader) instead of
-    # iter(training_loader) so that we can track the batch
-    # index and do some intra-epoch reporting
-    for _, batch in enumerate(training_loader):
-
-        # Gather data and report
-        losses.append( train_on_batch(
-            batch = batch,
-            model = model,
-            loss_fn = loss_fn,
-            optimizer = optimizer
-            )
-        )
-
-    return losses
-
-def process_losses(losses, epoch_num=None, mode='training'):
-    """
-    Return the mean loss over the entire batch
-    """
-    mean_loss = np.array(losses).mean()
-    if epoch_num:
-        print(f'Mean {mode} loss on epoch {epoch_num}: {mean_loss}')
-    else:
-        print(f'Mean {mode} training loss: {mean_loss}')
-    return mean_loss
+    for batch in training_loader:
+        losses.append( train_on_batch(batch = batch,
+                                      model = model,
+                                      loss_fn = loss_fn,
+                                      optimizer = optimizer))
+    print_training_loss(losses, epoch_number)
 
 def eval_one_batch(batch, model, loss_fn):
     """Evaluates the model on one batch of the validation dataloader"""
-    #print(type(batch))
-    #print(batch.shape)
-    #print(batch)
     model.eval()
     inputs, clinical_info, labels = batch
     inputs = inputs.cuda()
     clinical_info = clinical_info.cuda()
     labels = labels.cuda()
-
     outputs = model(inputs, clinical_info)
     loss = loss_fn(outputs, labels)
-
     return loss.item()
 
-def eval_on_dataset(model, eval_loader, loss_fn):
+def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None):
     """Evaluates the model on the validation data"""
     losses = []
-    for _, batch in enumerate(eval_loader):
+    for batch in val_loader:
         losses.append(
             eval_one_batch(
                 batch = batch,
@@ -79,10 +62,19 @@ def eval_on_dataset(model, eval_loader, loss_fn):
                 loss_fn = loss_fn
             )
         )
-    return losses
+    print_average_validation_loss(val_loss_lst=losses,
+                                  epoch_number=epoch_number)
+
+def print_average_validation_loss(val_loss_lst, epoch_number=None):
+    """Prints the average batch loss on val set"""
+        mean_validation_loss = sum(val_loss_lst) / len(val_loss_lst)
+    if epoch_number:
+        print(f"Mean validation loss on epoch {epoch_number}: {mean_validation_loss}")
+    else:
+        print(f"Mean validation loss: {mean_validation_loss}")
 
 def logits_to_preds_cross(logits_tensor):
-    """Converts the calss scores output by model to class probabilities"""
+    """Converts the class scores output by model to class probabilities"""
     probs = nn.Softmax(dim=1)(
         logits_tensor.detach()
         )
