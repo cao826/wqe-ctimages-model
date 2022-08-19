@@ -39,8 +39,11 @@ class NlstModel(nn.Module):
             count += 1
         self.backbone_params_number = count
 
-    def freeze_all_params_except(self, last_n_layers):
+    def freeze_all_params_except(self, last_n_layers=10, freeze_all=False):
         """Freezes all params except the last N layers"""
+        if freeze_all:
+            for param in self.backbone.parameters():
+                param.requires_gradd = False
         too_large_error = 'More params to unfreeze than number of parameters'
         assert last_n_layers < self.backbone_params_number, too_large_error
         unfreeze_threshold = self.backbone_params_number - last_n_layers
