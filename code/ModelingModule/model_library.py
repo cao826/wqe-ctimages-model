@@ -5,9 +5,20 @@ import torch
 from  torch import nn
 from torch.nn import functional as F
 
-def forward_through(linear_layer, activation, input_tensor):
+def forward_through(linear_layer, activation, input_tensor, dropout=None):
     """Applies the layer and the activation to the input tensor"""
-    return activation(linear_layer(input_tensor))
+    output = None
+
+    if dropout and not activation:
+        raise Exception('Invalid dropout and activation input')
+
+    if dropout:
+        output = dropout(activation(linear_layer(input_tensor)))
+
+    if activation:
+        output = activation(linear_layer(input_tensor))
+
+    return output
 
 def create_linear_layer(in_features, out_features):
     """Creates nn.Linear layer"""
@@ -63,6 +74,11 @@ class NlstModel(nn.Module):
         self.linear_3 = nn.Linear(in_features=10,
                                   out_features=2)
 
+        if use_leaky_relu:
+            self.activation = F.leaky_relu
+        else:
+            self.activation = F.relu
+
         self.dropout = nn.Dropout(p=.5)
 
     def change_to_leaky_relu(self):
@@ -91,6 +107,20 @@ class NlstModel(nn.Module):
             if i >= unfreeze_threshold:
                 continue
             param.requires_grad = False
+
+    def apply_fully_connected_layers(self, input_tensor):
+        """Applies all of the linear layers to the input"""
+        for layer in self.fully_connected_layers[:-1]:
+            input_tensor = forward_through(linear_layer=layer,
+                                activation=self.activation,
+                                input_tensor=input_tensor,
+                                dropout=self.dropout)
+        output_layer = self.fully_connected_layers[-1]
+        output_tensor = forward_through(linear_layer=output_layer,
+                            activation=None,
+                            input_tensor=input_tensor,
+                            dropout=None)
+        return output_tensor
 
     def forward(self, x, clinical_info):
         """Function where the model predicts classes"""
