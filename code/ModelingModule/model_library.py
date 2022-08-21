@@ -17,10 +17,10 @@ class NlstModel(nn.Module):
     At the very least, a model with less parameters.
     This model is overfitting like crazy.
     """
-    def __init__(self):
+    def __init__(self, use_leaky_relu=False):
         """
         """
-        super().__init__(use_leaky_relu=False)
+        super().__init__()
         self.backbone = torch.hub.load(
             repo_or_dir='pytorch/vision:v0.10.0',
             model='resnet101',
