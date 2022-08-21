@@ -28,12 +28,14 @@ def create_linear_layer(in_features, out_features):
 def create_network(feature_counts):
     """Creates linear lyaers form first to last feature count"""
     layers = []
+    #print(len(feature_counts))
     for i in range( len(feature_counts) - 1):
+        #print(i)
         in_features = feature_counts[i]
         out_features = feature_counts[i+1]
         layers.append(create_linear_layer(in_features=in_features,
                                           out_features=out_features))
-        return layers
+    return layers
 
 class NlstModel(nn.Module):
     """First version of model that I designed.
