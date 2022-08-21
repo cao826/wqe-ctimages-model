@@ -18,6 +18,9 @@ def forward_through(linear_layer, activation, input_tensor, dropout=None):
     if activation:
         output = activation(linear_layer(input_tensor))
 
+    if not dropout and not activation:
+        output = linear_layer(input_tensor)
+
     return output
 
 def create_linear_layer(in_features, out_features):
@@ -67,15 +70,6 @@ class NlstModel(nn.Module):
 
         self.fully_connected_layers = create_network(nodes_per_layer)
 
-        self.linear_1 = nn.Linear(in_features=1004, #this is a magic number
-                                  out_features=100  #these are all magic numbers :(
-)
-        self.linear_2 = nn.Linear(in_features=100,
-                                  out_features=10)
-
-        self.linear_3 = nn.Linear(in_features=10,
-                                  out_features=2)
-
         if use_leaky_relu:
             self.activation = F.leaky_relu
         else:
@@ -110,28 +104,41 @@ class NlstModel(nn.Module):
                 continue
             param.requires_grad = False
 
+    def to_cuda(self):
+        """Sends the linear layers to cuda
+
+        Only called if cuda device is available
+        """
+        if not torch.cuda.is_available():
+            raise Exception('CUDA device not available')
+        for layer in self.fully_connected_layers:
+            layer.cuda()
+
     def apply_fully_connected_layers(self, input_tensor):
         """Applies all of the linear layers to the input"""
+        if torch.cuda.is_available():
+            print('cuda is available')
+            self.to_cuda()
         for layer in self.fully_connected_layers[:-1]:
             input_tensor = forward_through(linear_layer=layer,
                                 activation=self.activation,
                                 input_tensor=input_tensor,
                                 dropout=self.dropout)
+            print(f"intermediate shape {input_tensor.shape}")
         output_layer = self.fully_connected_layers[-1]
+        print(f"output layer: {output_layer}")
         output_tensor = forward_through(linear_layer=output_layer,
-                            activation=None,
-                            input_tensor=input_tensor,
-                            dropout=None)
+                                        activation=None,
+                                        input_tensor=input_tensor,
+                                        dropout=None)
         return output_tensor
 
-    def forward(self, x, clinical_info):
+    def forward(self, input_tensor, clinical_info):
         """Function where the model predicts classes"""
-        image_feature_map = self.backbone(x)
+        image_feature_map = self.backbone(input_tensor)
         combined_feature_tensor = torch.cat((clinical_info, image_feature_map),
                                             dim=1)
 
-        x = self.dropout(F.leaky_relu(self.linear_1(combined_feature_tensor)))
-        x = self.dropout(F.leaky_relu(self.linear_2(x)))
-        x = self.linear_3(x)
+        output_tensor = self.apply_fully_connected_layers(combined_feature_tensor)
 
-        return x
+        return output_tensor
