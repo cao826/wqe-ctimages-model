@@ -5,10 +5,24 @@ import torch
 from  torch import nn
 from torch.nn import functional as F
 
-
 def forward_through(linear_layer, activation, input_tensor):
     """Applies the layer and the activation to the input tensor"""
     return activation(linear_layer(input_tensor))
+
+def create_linear_layer(in_features, out_features):
+    """Creates nn.Linear layer"""
+    return nn.Linear(in_features=in_features,
+                     out_features=out_features)
+
+def create_network(feature_counts):
+    """Creates linear lyaers form first to last feature count"""
+    layers = []
+    for i in range( len(feature_counts) - 1):
+        in_features = feature_counts[i]
+        out_features = feature_counts[i+1]
+        layers.append(create_linear_layer(in_features=in_features,
+                                          out_features=out_features))
+        return layers
 
 class NlstModel(nn.Module):
     """First version of model that I designed.
@@ -30,6 +44,15 @@ class NlstModel(nn.Module):
 
         if use_leaky_relu:
             self.change_to_leaky_relu()
+
+        concatenated_dimension_size = 1004
+        output_dimension = 2
+        nodes_per_layer = [concatenated_dimension_size,
+                           50,
+                           5,
+                           output_dimension]
+
+        self.fully_connected_layers = create_network(nodes_per_layer)
 
         self.linear_1 = nn.Linear(in_features=1004, #this is a magic number
                                   out_features=100  #these are all magic numbers :(
