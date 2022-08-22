@@ -67,7 +67,7 @@ def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None):
 
 def print_average_validation_loss(val_loss_lst, epoch_number=None):
     """Prints the average batch loss on val set"""
-        mean_validation_loss = sum(val_loss_lst) / len(val_loss_lst)
+    mean_validation_loss = np.array(val_loss_lst).mean()
     if epoch_number:
         print(f"Mean validation loss on epoch {epoch_number}: {mean_validation_loss}")
     else:
