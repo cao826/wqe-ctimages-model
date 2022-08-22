@@ -1,9 +1,12 @@
 """
 Module Level Docstring
 """
+from collections import namedtuple
 import torch
 from  torch import nn
 from torch.nn import functional as F
+
+ModelInfo = namedtuple("ModelInfo", "name repo")
 
 def forward_through(linear_layer, activation, input_tensor, dropout=None):
     """Applies the layer and the activation to the input tensor"""
@@ -29,7 +32,7 @@ def create_linear_layer(in_features, out_features):
                      out_features=out_features)
 
 def create_network(feature_counts):
-    """Creates linear lyaers form first to last feature count"""
+    """Creates linear layers form first to last feature count"""
     layers = []
     #print(len(feature_counts))
     for i in range( len(feature_counts) - 1):
@@ -39,6 +42,28 @@ def create_network(feature_counts):
         layers.append(create_linear_layer(in_features=in_features,
                                           out_features=out_features))
     return layers
+
+def load_model(model_repo: str, model_name: str, pretrained: bool):
+    """Loads a model in. Can be pretrained or not"""
+    return torch.hub.load(repo_or_dir=model_repo,
+                          model=model_name,
+                          pretrained=pretrained)
+
+class BackboneGetter():
+    """Class level docstring"""
+    def __init__(self, model_dict):
+        """Constructor"""
+        self.model_dict = model_dict
+    def list_models(self):
+        """prints all the models available"""
+        for key in self.model_dict.keys():
+            print(key)
+    def __call__(self, model_name, pretrained=True):
+        """Loads speicified model from torch.hub"""
+        model_info = self.model_dict[model_name]
+        return load_model(model_repo=model_info.repo,
+                          model_name=model_info.name,
+                          pretrained=pretrained)
 
 class NlstModel(nn.Module):
     """First version of model that I designed.
