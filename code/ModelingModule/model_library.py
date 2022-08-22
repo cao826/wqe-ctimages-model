@@ -8,6 +8,16 @@ from torch.nn import functional as F
 
 ModelInfo = namedtuple("ModelInfo", "name repo")
 
+torchvision_model_repo = "pytorch/vision:v0.10.1"
+
+known_models = {
+    'resnet101': ModelInfo('resnet101', torchvision_model_repo),
+    'mobilenet': ModelInfo('lraspp_mobilenet_v3_large', torchvision_model_repo),
+    'resnext': ModelInfo('resnext50_32x4d', torchvision_model_repo),
+    'efficientnet': ModelInfo(name='nvidia_efficientnet_b0',
+                             repo='NVIDIA/DeepLearningExamples:torchhub')
+}
+
 def forward_through(linear_layer, activation, input_tensor, dropout=None):
     """Applies the layer and the activation to the input tensor"""
     output = None
@@ -43,10 +53,10 @@ def create_network(feature_counts):
                                           out_features=out_features))
     return layers
 
-def load_model(model_repo: str, model_name: str, pretrained: bool):
+def load_model(model_info, pretrained: bool):
     """Loads a model in. Can be pretrained or not"""
-    return torch.hub.load(repo_or_dir=model_repo,
-                          model=model_name,
+    return torch.hub.load(repo_or_dir=model_info.repo,
+                          model=model_info.name,
                           pretrained=pretrained)
 
 class BackboneGetter():
@@ -56,13 +66,12 @@ class BackboneGetter():
         self.model_dict = model_dict
     def list_models(self):
         """prints all the models available"""
-        for key in self.model_dict.keys():
+        for key in self.model_dict:
             print(key)
     def __call__(self, model_name, pretrained=True):
         """Loads speicified model from torch.hub"""
         model_info = self.model_dict[model_name]
-        return load_model(model_repo=model_info.repo,
-                          model_name=model_info.name,
+        return load_model(model_info=model_info,
                           pretrained=pretrained)
 
 class NlstModel(nn.Module):
@@ -167,3 +176,7 @@ class NlstModel(nn.Module):
         output_tensor = self.apply_fully_connected_layers(combined_feature_tensor)
 
         return output_tensor
+
+if __name__ == '__main__':
+    for _ in known_models.items():
+        load_model(_, pretrained=False)
