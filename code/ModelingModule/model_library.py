@@ -75,22 +75,16 @@ class BackboneGetter():
                           pretrained=pretrained)
 
 class NlstModel(nn.Module):
-    """First version of model that I designed.
-
-    I have to try this with other backbones.
-    At the very least, a model with less parameters.
-    This model is overfitting like crazy.
-    """
-    def __init__(self, use_leaky_relu=False):
+    """Model class for binary predction on NLST data"""
+    def __init__(self,
+                 backbone,
+                 use_leaky_relu=False):
         """
         """
         super().__init__()
-        self.backbone = torch.hub.load(
-            repo_or_dir='pytorch/vision:v0.10.0',
-            model='resnet101',
-            pretrained=True
-        )
-        self.get_number_backbone_params()
+        self.backbone = backbone
+        #self.backbone_params_number
+        
 
         if use_leaky_relu:
             self.change_to_leaky_relu()
