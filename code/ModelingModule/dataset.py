@@ -123,4 +123,4 @@ class NlstDataset(Dataset):
         return image, clinical_info, label
 
 if __name__ == 'main':
-    print('Why are you running this a script? This is a module!")
+    print('Why are you running this a script? This is a module!')
