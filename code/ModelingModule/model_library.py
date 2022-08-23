@@ -2,6 +2,7 @@
 Module Level Docstring
 """
 from collections import namedtuple
+from typing import List, Dict, NamedTuple
 import torch
 from  torch import nn
 from torch.nn import functional as F
@@ -11,20 +12,28 @@ ModelInfo = namedtuple("ModelInfo", "name repo")
 torchvision_model_repo = "pytorch/vision:v0.10.1"
 
 known_models = {
-    'resnet101': ModelInfo(name='resnet101',
-                           repo=torchvision_model_repo),
-
-    'mobilenet': ModelInfo(name='lraspp_mobilenet_v3_large',
-                           repo=torchvision_model_repo),
-
-    'resnext': ModelInfo(name='resnext50_32x4d',
-                         repo=torchvision_model_repo),
-
-    'efficientnet': ModelInfo(name='nvidia_efficientnet_b0',
-                              repo='NVIDIA/DeepLearningExamples:torchhub'),
-
-    'inception': ModelInfo(name='inception_v3',
-                           repo=torchvision_model_repo)
+    'resnet101': ModelInfo(
+        name='resnet101',
+        repo=torchvision_model_repo
+        ),
+    'resnet50': ModelInfo(
+        name='',
+        repo=''
+        ),
+    'mobilenet': ModelInfo(
+        name='lraspp_mobilenet_v3_large',
+        repo=torchvision_model_repo
+        ),
+    'resnext': ModelInfo(
+        name='resnext50_32x4d',
+        repo=torchvision_model_repo),
+    'efficientnet': ModelInfo(
+        name='nvidia_efficientnet_b0',
+        repo='NVIDIA/DeepLearningExamples:torchhub'),
+    'inception': ModelInfo(
+        name='inception_v3',
+        repo=torchvision_model_repo
+        )
 }
 
 def forward_through(linear_layer, activation, input_tensor, dropout=None):
@@ -70,7 +79,7 @@ def load_model(model_info, pretrained: bool):
 
 class BackboneGetter():
     """Class level docstring"""
-    def __init__(self, model_dict):
+    def __init__(self, model_dict: Dict[str:NamedTuple]):
         """Constructor"""
         self.model_dict = model_dict
     def list_models(self):
@@ -78,8 +87,10 @@ class BackboneGetter():
         for key in self.model_dict:
             print(key)
     def __call__(self, model_name, pretrained=True):
-        """Loads speicified model from torch.hub"""
-        model_info = self.model_dict[model_name]
+        """Loads specified model from torch.hub"""
+        model_info = self.model_dict.get(model_name, None)
+        if not model_info:
+            raise Exception('Unrecognized backbone model type')
         return load_model(model_info=model_info,
                           pretrained=pretrained)
 
@@ -87,33 +98,25 @@ class NlstModel(nn.Module):
     """Model class for binary predction on NLST data"""
     def __init__(self,
                  backbone,
-                 use_leaky_relu=False):
-        """
-        """
+                 network_specification: List[int],
+                 use_leaky_relu: bool = False):
+        """Constructor"""
         super().__init__()
         self.backbone = backbone
-        #self.backbone_params_number
+        self.get_number_backbone_params()
+        self.fully_connected_layers = create_network(network_specification)
+        self.choose_activations(use_leaky_relu)
+        self.dropout = nn.Dropout(p=.5)
 
+    def choose_activations(self, use_leaky_relu):
+        """Model will use ReLU or leaky ReLU depending on input"""
         if use_leaky_relu:
-            self.change_to_leaky_relu()
-
-        concatenated_dimension_size = 1004
-        output_dimension = 2
-        nodes_per_layer = [concatenated_dimension_size,
-                           50,
-                           5,
-                           output_dimension]
-
-        self.fully_connected_layers = create_network(nodes_per_layer)
-
-        if use_leaky_relu:
+            self.change_backbone_to_leaky_relu()
             self.activation = F.leaky_relu
         else:
             self.activation = F.relu
 
-        self.dropout = nn.Dropout(p=.5)
-
-    def change_to_leaky_relu(self):
+    def change_backbone_to_leaky_relu(self):
         """Changes the activation functions to LReLU"""
         ### change ReLU to leakyReLU ###
         for _, module in self.backbone.named_modules():
@@ -153,16 +156,16 @@ class NlstModel(nn.Module):
     def apply_fully_connected_layers(self, input_tensor):
         """Applies all of the linear layers to the input"""
         if torch.cuda.is_available():
-            print('cuda is available')
+            #print('cuda is available')
             self.to_cuda()
         for layer in self.fully_connected_layers[:-1]:
             input_tensor = forward_through(linear_layer=layer,
                                 activation=self.activation,
                                 input_tensor=input_tensor,
                                 dropout=self.dropout)
-            print(f"intermediate shape {input_tensor.shape}")
+            #print(f"intermediate shape {input_tensor.shape}")
         output_layer = self.fully_connected_layers[-1]
-        print(f"output layer: {output_layer}")
+        #print(f"output layer: {output_layer}")
         output_tensor = forward_through(linear_layer=output_layer,
                                         activation=None,
                                         input_tensor=input_tensor,
@@ -175,10 +178,41 @@ class NlstModel(nn.Module):
         combined_feature_tensor = torch.cat((clinical_info, image_feature_map),
                                             dim=1)
 
-        output_tensor = self.apply_fully_connected_layers(combined_feature_tensor)
+        output_tensor = self.apply_fully_connected_layers(
+                input_tensor=combined_feature_tensor
+                )
 
         return output_tensor
 
+class ModelConstructor():
+    """Class that build NLstModels with different specifications
+
+    One can change the backbone, the netowrk specification, and the activations
+    used
+    """
+
+    def __init__(self,
+                 backbone_getter=BackboneGetter(known_models)
+                 ):
+        """Constructor"""
+        self.backbone_getter = backbone_getter
+
+    def construct_model(self,
+                        backbone_name,
+                        *nodes_per_layer,
+                        pretrained=True,
+                        use_leaky_relu=False):
+        """Creates an NlstModel instance with the specifications provided"""
+        network_specification = list(nodes_per_layer)
+        backbone = self.backbone_getter(model_name=backbone_name,
+                                        pretrained=pretrained)
+        model = NlstModel(
+                 backbone=backbone,
+                 network_specification=network_specification,
+                 use_leaky_relu=use_leaky_relu)
+        return model
+
+
+
 if __name__ == '__main__':
-    for _ in known_models.items():
-        load_model(_, pretrained=False)
+    print('No tests needed right now')
