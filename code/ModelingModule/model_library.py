@@ -74,7 +74,8 @@ def create_network(feature_counts):
 def load_model(model_info, pretrained: bool):
     """Loads a model in. Can be pretrained or not"""
     return torch.hub.load(repo_or_dir=model_info.repo,
-                          model=model_info.name)
+                          model=model_info.name,
+                          pretrained=True)
 
 class BackboneGetter():
     """Class level docstring"""
@@ -90,8 +91,7 @@ class BackboneGetter():
         model_info = self.model_dict.get(model_name, None)
         if not model_info:
             raise Exception('Unrecognized backbone model type')
-        return load_model(model_info=model_info,
-                          pretrained=True)
+        return load_model(model_info=model_info)
 
 class NlstModel(nn.Module):
     """Model class for binary predction on NLST data"""
