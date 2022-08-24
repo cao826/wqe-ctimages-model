@@ -86,7 +86,7 @@ class BackboneGetter():
         """prints all the models available"""
         for key in self.model_dict:
             print(key)
-    def __call__(self, model_name, pretrained=True):
+    def __call__(self, model_name):
         """Loads specified model from torch.hub"""
         model_info = self.model_dict.get(model_name, None)
         if not model_info:
