@@ -21,17 +21,14 @@ def get_label(dataframe, filename):
     I could write a more general function, but it would be a pain
     """
     label = dataframe[dataframe.Filename == filename].Label.values[0]
-    #print(label)
     return label
 
-def get_tensor(array):
-        """
-        """
-        tensor = torch.tensor(array)
-        tensor = tensor.unsqueeze(0)
-        ## concatenate into three channels
-        tensor = torch.cat([tensor for i in range(3)], dim=0).double()
-        return tensor.float()
+def read_as_tensor(path2image):
+    """Reads a stored array as a PyTorch tensor"""
+    one_channel_tensor = torch.tensor(np.load(path2image))
+    three_channel_tensor = torch.cat([
+        one_channel_tensor for i in range(3)], dim=0).double()
+    return three_channel_tensor
 
 def get_pid(filename):
     """
@@ -89,8 +86,6 @@ class NlstDataset(Dataset):
             'age'
         ]].values[0].astype(float)
         clinical_info_tensor = torch.tensor(clinical_info_vec)
-        #print(clinical_info_vec)
-        #print(clinical_info_tensor)
         return clinical_info_tensor.float()
 
     
@@ -109,16 +104,10 @@ class NlstDataset(Dataset):
         filename = self.files[idx]
         pid = get_pid(filename)
         label = self.get_label(filename)
-        #print(filename)
         path2image = self.get_path_to_filename( filename, label)
-        #print(path2image)
-        #print(path2image)
-        image = np.load(path2image)
+        image = read_as_tensor(path2image)
         image = self.transformations(image)
-        image = get_tensor(array=image)
-        #image = self.transformations(image)
         clinical_info = self.get_clinical_info_vector(int(pid))
-        #label = self.labels[label]
 
         return image, clinical_info, label
 
