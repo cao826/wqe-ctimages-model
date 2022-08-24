@@ -29,11 +29,7 @@ known_models = {
         repo=torchvision_model_repo),
     'efficientnet': ModelInfo(
         name='nvidia_efficientnet_b0',
-        repo='NVIDIA/DeepLearningExamples:torchhub'),
-    'inception': ModelInfo(
-        name='inception_v3',
-        repo=torchvision_model_repo
-        )
+        repo='NVIDIA/DeepLearningExamples:torchhub')
 }
 
 def forward_through(linear_layer, activation, input_tensor, dropout=None):
