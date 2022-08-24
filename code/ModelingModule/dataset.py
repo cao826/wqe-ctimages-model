@@ -27,7 +27,7 @@ def read_as_tensor(path2image):
     """Reads a stored array as a PyTorch tensor"""
     one_channel_tensor = torch.tensor(np.load(path2image))
     print(f"one channel tensor shape: {one_channel_tensor.shape}")
-    three_channel_tensor = torch.cat([
+    three_channel_tensor = torch.stack([
         one_channel_tensor for i in range(3)], dim=0).double()
     print(f"three channel shape: {three_channel_tensor.shape}")
     return three_channel_tensor
