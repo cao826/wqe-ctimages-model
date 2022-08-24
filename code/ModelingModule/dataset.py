@@ -28,7 +28,7 @@ def read_as_tensor(path2image):
     one_channel_tensor = torch.tensor(np.load(path2image))
     three_channel_tensor = torch.cat([
         one_channel_tensor for i in range(3)], dim=0).double()
-    return three_channel_tensor.unsqueeze(dim=0)
+    return three_channel_tensor
 
 def get_pid(filename):
     """
