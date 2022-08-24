@@ -71,7 +71,7 @@ def create_network(feature_counts):
                                           out_features=out_features))
     return layers
 
-def load_model(model_info, pretrained: bool):
+def load_model(model_info):
     """Loads a model in. Can be pretrained or not"""
     return torch.hub.load(repo_or_dir=model_info.repo,
                           model=model_info.name,
