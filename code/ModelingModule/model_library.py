@@ -79,7 +79,7 @@ def load_model(model_info, pretrained: bool):
 
 class BackboneGetter():
     """Class level docstring"""
-    def __init__(self, model_dict: Dict[str:NamedTuple]):
+    def __init__(self, model_dict: Dict[str,NamedTuple]):
         """Constructor"""
         self.model_dict = model_dict
     def list_models(self):
