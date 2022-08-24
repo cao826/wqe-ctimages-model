@@ -74,8 +74,7 @@ def create_network(feature_counts):
 def load_model(model_info, pretrained: bool):
     """Loads a model in. Can be pretrained or not"""
     return torch.hub.load(repo_or_dir=model_info.repo,
-                          model=model_info.name,
-                          pretrained=pretrained)
+                          model=model_info.name)
 
 class BackboneGetter():
     """Class level docstring"""
