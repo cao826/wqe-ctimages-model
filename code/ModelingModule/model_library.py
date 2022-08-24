@@ -17,8 +17,8 @@ known_models = {
         repo=torchvision_model_repo
         ),
     'resnet50': ModelInfo(
-        name='',
-        repo=''
+        name='resnet50',
+        repo=torchvision_model_repo
         ),
     'mobilenet': ModelInfo(
         name='lraspp_mobilenet_v3_large',
