@@ -1,10 +1,10 @@
+"""Module level docstring
+"""
 import os
+import random
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-import torchvision.transforms as transforms
-from PIL import Image, ImageDraw
-import random
 import numpy as np
 
 #fix random seed
@@ -14,7 +14,7 @@ def get_label(dataframe, filename):
     """
     Gets the value from the dataframe
 
-    THIS FUNCTION ASSUMES: 
+    THIS FUNCTION ASSUMES:
     - there is a column named 'Filename' where the filname is
     - there is a column named 'Label' where the label is
 
@@ -33,14 +33,17 @@ def read_as_tensor(path2image):
     return three_channel_tensor
 
 def get_pid(filename):
-    """
+    """returns the part of the filename that corresponds to pid
     """
     return filename.split('-')[0]
 
 class NlstDataset(Dataset):
+    """Dataset for Nlst images and clinical information
     """
-    """
-    def __init__(self, path2clinical_data, path2images, neg_subfolder, pos_subfolder, transforms):
+    def __init__(self, path2clinical_data,
+                 path2images, neg_subfolder,
+                 pos_subfolder, transforms):
+        """Constructor"""
         self.clinical_data = pd.read_csv(path2clinical_data)
         self.path2images = path2images
         self.subfolders = [neg_subfolder, pos_subfolder]
@@ -48,7 +51,6 @@ class NlstDataset(Dataset):
             1: pos_subfolder,
             0: neg_subfolder
         }
-        
         self.pos_files = [file for file in os.listdir(os.path.join(
             path2images,
             pos_subfolder))
@@ -65,22 +67,21 @@ class NlstDataset(Dataset):
         self.transformations = transforms
 
     def __len__(self):
+        """returns the number of datapoints"""
         return len(self.files)
 
     def get_label(self, filename):
-        """
-        """
+        """gets the label of a scan slice"""
         label = 0
         if filename in self.pos_files:
             label = 1
         return label
 
     def get_clinical_info_vector(self, pid):
-        """
-        """
+        """Returns the demographic information about a scan's patient"""
         mask = (self.clinical_data.pid == pid)
         pid_row = self.clinical_data[mask]
-        assert(pid_row.shape[0] == 1)
+        assert pid_row.shape[0] == 1
         clinical_info_vec = pid_row[[
             'race',
             'cigsmok',
@@ -90,10 +91,8 @@ class NlstDataset(Dataset):
         clinical_info_tensor = torch.tensor(clinical_info_vec)
         return clinical_info_tensor.float()
 
-    
     def get_path_to_filename(self, filename, label):
-        """
-        """
+        """returns the path to the filename"""
         subfolder = self.label_to_subfolder[label]
         intermediate = os.path.join(subfolder, filename)
         path2filename = os.path.join(self.path2images, intermediate)
@@ -101,13 +100,14 @@ class NlstDataset(Dataset):
 
 
     def __getitem__(self, idx):
-        """
-        """
+        """Returns a scan and its clinical information"""
         filename = self.files[idx]
         pid = get_pid(filename)
         label = self.get_label(filename)
         path2image = self.get_path_to_filename( filename, label)
         image = read_as_tensor(path2image)
+        if torch.cuda.is_available():
+            image = image.cuda()
         image = self.transformations(image)
         clinical_info = self.get_clinical_info_vector(int(pid))
 
