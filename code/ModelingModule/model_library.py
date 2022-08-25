@@ -181,7 +181,7 @@ class NlstModel(nn.Module):
         image_feature_map = self.backbone(input_tensor)
         combined_feature_tensor = torch.cat((clinical_info, image_feature_map),
                                             dim=1)
-
+        print(f"shape of combined feature_tensor: {combined_feature_tensor.shape}")
         output_tensor = self.apply_fully_connected_layers(
                 input_tensor=combined_feature_tensor
                 )
