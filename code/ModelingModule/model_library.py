@@ -29,9 +29,14 @@ known_models = {
         repo=torchvision_model_repo),
     'efficientnet': ModelInfo(
         name='nvidia_efficientnet_b0',
-        repo='NVIDIA/DeepLearningExamples:torchhub'),
+        repo='NVIDIA/DeepLearningExamples:torchhub'
+        ),
     'densenet': ModelInfo(
         name='densenet121',
+        repo=torchvision_model_repo
+        ),
+    'vgg19': ModelInfo(
+        name='vgg19',
         repo=torchvision_model_repo
         )
 }
