@@ -21,7 +21,7 @@ known_models = {
         repo=torchvision_model_repo
         ),
     'mobilenet': ModelInfo(
-        name='mobelinet_v2',
+        name='mobilenet_v2',
         repo=torchvision_model_repo
         ),
     'resnext': ModelInfo(
