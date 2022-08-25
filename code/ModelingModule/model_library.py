@@ -29,7 +29,11 @@ known_models = {
         repo=torchvision_model_repo),
     'efficientnet': ModelInfo(
         name='nvidia_efficientnet_b0',
-        repo='NVIDIA/DeepLearningExamples:torchhub')
+        repo='NVIDIA/DeepLearningExamples:torchhub'),
+    'densenet': ModelInfo(
+        name='densenet121',
+        repo=torchvision_model_repo
+        )
 }
 
 def forward_through(linear_layer, activation, input_tensor, dropout=None):
