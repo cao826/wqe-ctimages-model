@@ -5,7 +5,6 @@ import random
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-import numpy as np
 from PIL import Image
 
 #fix random seed
@@ -59,7 +58,7 @@ class NlstDataset(Dataset):
 
         self.files = self.neg_files + self.pos_files
         random.shuffle(self.files)
-        print('dataset has {} files'.format(len(self.files)))
+        print(f'dataset has {len(self.files)} files')
         self.transformations = transforms
 
     def __len__(self):
