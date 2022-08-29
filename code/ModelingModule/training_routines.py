@@ -29,7 +29,7 @@ def print_training_loss(loss_list, epoch_number=None):
     else:
         print(f"Training loss: {mean_loss}")
 
-def train_one_epoch(model, training_loader, 
+def train_one_epoch(model, training_loader,
                     loss_fn, optimizer, epoch_number=None):
     """Trains the model for one epoch"""
     losses = []

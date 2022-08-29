@@ -3,14 +3,13 @@ Module level Docstring
 """
 import os
 from collections import namedtuple
-from typing import Union, Any, NoReturn, List
+from typing import Union, Any, List
 import pydicom as dcm
 import numpy as np
-import matplotlib.pyplot as plt
 from pydicom.dataset import FileDataset
 from pydicom.dicomdir import DicomDir
-from matplotlib import cm
 from PIL import Image
+from matplotlib import cm
 
 CtImages = namedtuple("CtImages", "no_window lung_window savefile_name")
 lung_window = (1500, -600)
@@ -92,9 +91,10 @@ def extract_raw_and_lung_window_arrays(path2slice, slice_filename):
 
 def create_image_from_array(ct_array):
     """Converts an array from DICOM to a PIL Image instance"""
-    return Image.fromarray(
-            np.uint8(cm.gray(ct_array) * 255)
-            ).convert('RGB')
+    ct_image = Image.fromarray(
+        np.uint8(cm.gray(ct_array) * 255)
+        ).convert('RGB')
+    return ct_image
 
 def extract_images(path2slice, slice_filename):
     """Extract a PIL Image instance of the lung window image"""
