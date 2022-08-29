@@ -50,12 +50,12 @@ class NlstDataset(Dataset):
         self.pos_files = [file for file in os.listdir(os.path.join(
             path2images,
             pos_subfolder))
-            if '.npy' in file]
+            if '.png' in file]
 
         self.neg_files = [file for file in os.listdir(os.path.join(
             path2images,
             neg_subfolder))
-            if '.npy' in file]
+            if '.png' in file]
 
         self.files = self.neg_files + self.pos_files
         random.shuffle(self.files)
