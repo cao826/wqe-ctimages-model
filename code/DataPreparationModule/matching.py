@@ -49,7 +49,7 @@ class PidHandler():
                 folder for folder in os.listdir(self.root) if folder[0] != '.'
                 ]
         assert len(year_directories) > 0, ('No year folders detected for',
-                'pid {}'.format(pid))
+                f'pid: {pid}'))
         self.year_dict = {
                 get_year_from(year_foldername): year_foldername for year_foldername in year_directories
                 }

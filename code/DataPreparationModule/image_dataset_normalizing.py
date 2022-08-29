@@ -1,7 +1,8 @@
+"""Simple code to find the mean pixel of the image dataset"""
 import os
-import numpy as np
 import pickle
 import argparse
+import numpy as np
 
 def read_numpy_array(path, filename):
     """Reads in the numpy array"""
@@ -21,9 +22,9 @@ def save_result(savepath, result, month, date):
     """Saves the resultimg mean pixel to file"""
     savename = f'mean_pixel-{month}-{date}'
     destination = os.path.join(savepath, savename)
-    with open(destination, 'wb') as fp:
-        pickle.dump(result, fp)
-    fp.close()
+    with open(destination, 'wb') as file_object:
+        pickle.dump(result, file_object)
+    file_object.close()
 
 def do_it_all(positives_path, negatives_path):
     """find the mean pixel of the dataset"""
@@ -57,5 +58,3 @@ if __name__ == '__main__':
                            negatives_path=args.negpath)
     save_result(savepath=args.savepath, result=mean_pixel,
                 month=args.month, date=args.date)
-
-
