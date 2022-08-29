@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pydicom.dataset import FileDataset
 from pydicom.dicomdir import DicomDir
+from matplotlib import cm
+from PIL import Image
 
 CtImages = namedtuple("CtImages", "no_window lung_window savefile_name")
 lung_window = (1500, -600)
@@ -67,10 +69,10 @@ def prepare_savefile_name(dicom_file):
     """Prepares a unique_filename to save a windowed image to file"""
     patient_id = dicom_file.PatientID
     study_date = dicom_file.StudyDate
-    save_filename = "-".join([patient_id, study_date]) + ".npy"
+    save_filename = "-".join([patient_id, study_date]) + ".png"
     return save_filename
 
-def extract_lung_window_image(path2slice, slice_filename):
+def extract_raw_and_lung_window_arrays(path2slice, slice_filename):
     """Extracts a lung window CT image from a DICOM file
 
     Uses all of the functions above as helpers
@@ -88,7 +90,23 @@ def extract_lung_window_image(path2slice, slice_filename):
     images_from_dicom = CtImages(hounsfield_array, lung_array, savefile_name)
     return images_from_dicom
 
-def save_array(array, path2savefolder, savefile_name):
+def create_image_from_array(ct_array):
+    """Converts an array from DICOM to a PIL Image instance"""
+    return Image.fromarray(
+            np.uint8(cm.gray(ct_array) * 255)
+            ).convert('RGB')
+
+def extract_images(path2slice, slice_filename):
+    """Extract a PIL Image instance of the lung window image"""
+    dicom_arrays = extract_raw_and_lung_window_arrays(
+            path2slice=path2slice,
+            slice_filename=slice_filename
+            )
+    lung_window_image = create_image_from_array(dicom_arrays.lung_window)
+    no_window_image = create_image_from_array(dicom_arrays.no_window)
+    return lung_window_image, no_window_image, dicom_arrays.savefile_name
+
+def save_image(image, path2savefolder, savefile_name):
     """saves the windowed image to file"""
     full_savepath = os.path.join(path2savefolder, savefile_name)
-    np.save(full_savepath, array)
+    image.save(full_savepath)
