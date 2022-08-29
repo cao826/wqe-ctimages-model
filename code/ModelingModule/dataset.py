@@ -6,6 +6,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 import numpy as np
+from PIL import Image
 
 #fix random seed
 torch.manual_seed(0)
@@ -23,12 +24,9 @@ def get_label(dataframe, filename):
     label = dataframe[dataframe.Filename == filename].Label.values[0]
     return label
 
-def read_as_tensor(path2image):
+def read_image(path2image):
     """Reads a stored array as a PyTorch tensor"""
-    one_channel_tensor = torch.tensor(np.load(path2image))
-    three_channel_tensor = torch.stack([
-        one_channel_tensor for i in range(3)], dim=0).float()
-    return three_channel_tensor
+    return Image.open(path2image)
 
 def get_pid(filename):
     """returns the part of the filename that corresponds to pid
@@ -103,7 +101,7 @@ class NlstDataset(Dataset):
         pid = get_pid(filename)
         label = self.get_label(filename)
         path2image = self.get_path_to_filename( filename, label)
-        image = read_as_tensor(path2image)
+        image = read_image(path2image)
         image = self.transformations(image)
         clinical_info = self.get_clinical_info_vector(int(pid))
 
