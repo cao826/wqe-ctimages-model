@@ -50,18 +50,27 @@ def train_one_epoch(model, training_loader,
                                       debug=debug))
     print_training_loss(losses, epoch_number)
 
-def eval_one_batch(batch, model, loss_fn):
+def eval_one_batch(batch, model, loss_fn, debug=False):
     """Evaluates the model on one batch of the validation dataloader"""
     model.eval()
-    inputs, clinical_info, labels = batch
+    if debug:
+        inputs, labels = batch
+    else:
+        inputs, clinical_info, labels = batch
     inputs = inputs.cuda()
-    clinical_info = clinical_info.cuda()
+    if not debug: 
+        clinical_info = clinical_info.cuda()
     labels = labels.cuda()
-    outputs = model(inputs, clinical_info)
+    if debug:
+        labels = labels.float()
+    if not debug:
+        outputs = model(inputs, clinical_info)
+    else:
+        outputs = model(inputs)
     loss = loss_fn(outputs, labels)
     return loss.item()
 
-def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None):
+def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None, debug=False):
     """Evaluates the model on the validation data"""
     losses = []
     for batch in val_loader:
