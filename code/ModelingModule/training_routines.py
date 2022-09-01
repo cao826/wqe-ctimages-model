@@ -83,7 +83,8 @@ def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None, debug=Fals
             )
         )
     print_average_validation_loss(val_loss_lst=losses,
-                                  epoch_number=epoch_number)
+                                  epoch_number=epoch_number,
+                                  debug=debug)
 
 def print_average_validation_loss(val_loss_lst, epoch_number=None):
     """Prints the average batch loss on val set"""
