@@ -37,14 +37,15 @@ def print_training_loss(loss_list, epoch_number=None):
         print(f"Training loss: {mean_loss}")
 
 def train_one_epoch(model, training_loader,
-                    loss_fn, optimizer, epoch_number=None):
+                    loss_fn, optimizer, epoch_number=None, debug=False):
     """Trains the model for one epoch"""
     losses = []
     for batch in training_loader:
         losses.append( train_on_batch(batch = batch,
                                       model = model,
                                       loss_fn = loss_fn,
-                                      optimizer = optimizer))
+                                      optimizer = optimizer,
+                                      debug=debug))
     print_training_loss(losses, epoch_number)
 
 def eval_one_batch(batch, model, loss_fn):
