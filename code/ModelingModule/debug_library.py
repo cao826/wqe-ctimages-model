@@ -205,7 +205,7 @@ class ModelConstructor():
         """Creates an NlstModel instance with the specifications provided"""
         network_specification = list(nodes_per_layer)
         backbone = self.backbone_getter(model_name=backbone_name)
-        model = NlstModel(
+        model = DebugModel(
                  backbone=backbone,
                  network_specification=network_specification,
                  use_leaky_relu=use_leaky_relu)
