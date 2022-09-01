@@ -79,8 +79,8 @@ def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None, debug=Fals
             eval_one_batch(
                 batch = batch,
                 model = model,
-                loss_fn = loss_fn
-                debug=debug
+                loss_fn = loss_fn,
+                debug=debug,
             )
         )
     print_average_validation_loss(val_loss_lst=losses,
