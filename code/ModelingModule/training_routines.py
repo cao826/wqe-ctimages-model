@@ -5,16 +5,23 @@ import numpy as np
 from torch import nn
 import torch
 
-def train_on_batch(batch, model, loss_fn, optimizer):
+def train_on_batch(batch, model, loss_fn, optimizer, debug=False):
     """Trains the model on a batch of the data"""
     model.train()
-    inputs, clinical_info_batch, labels = batch
+    if debug:
+        inputs, labels = batch
+    else:
+        inputs, clinical_info_batch, labels = batch
     inputs = inputs.cuda()
-    clinical_info_batch = clinical_info_batch.cuda()
+    if not debug:
+        clinical_info_batch = clinical_info_batch.cuda()
     labels = labels.cuda()
 
     optimizer.zero_grad()
-    outputs = model(inputs, clinical_info_batch)
+    if not debug:
+        outputs = model(inputs, clinical_info_batch)
+    else:
+        outputs = model(inputs)
     loss = loss_fn(outputs, labels)
     loss.backward()
     optimizer.step()
