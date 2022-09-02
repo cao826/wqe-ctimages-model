@@ -75,7 +75,7 @@ class Chex8Dataset(Dataset):
     def __getitem__(self, idx):
         """Returns a scan and its clinical information"""
         filename = self.files[idx]
-        clinical_info_tensor = self.get_clinical_info(filename)
+        clinical_info = self.get_clinical_info(filename)
         label = self.get_label(filename)
         image = read_image(os.path.join(self.path2images, filename))
         if self.transformations:
