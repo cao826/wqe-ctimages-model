@@ -57,7 +57,7 @@ class Chex8Dataset(Dataset):
         label = row["Finding Labels"].values[0]
         return label
 
-    def get_clinical_info_vector(self, filename):
+    def get_clinical_info(self, filename):
         """Returns the demographic information about a scan's patient"""
         mask = (self.clinical_data['Image Index'] == filename)
         patient_row = self.clinical_data[mask]
@@ -75,7 +75,7 @@ class Chex8Dataset(Dataset):
     def __getitem__(self, idx):
         """Returns a scan and its clinical information"""
         filename = self.files[idx]
-        clinical_info_tensor = self.get_clinical_info_tensor(filename)
+        clinical_info_tensor = self.get_clinical_info(filename)
         label = self.get_label(filename)
         image = read_image(os.path.join(self.path2images, filename))
         image = self.transforms(image)
