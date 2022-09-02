@@ -85,7 +85,7 @@ class FileExtension(): ##you should be able to infer filetype from the result_ty
         self.filetype_mapper = {
             'png': '.png',
             'pickle': '.pickle',
-            'numpy': '.npy'
+            'numpy': '.npy',
             'pytorch': '.pt'# HAS TO BE EXTENDED LATER
         }
     def check_filetype(self, filetype):
