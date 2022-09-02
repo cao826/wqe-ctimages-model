@@ -86,7 +86,7 @@ class FileExtension(): ##you should be able to infer filetype from the result_ty
             'png': '.png',
             'pickle': '.pickle',
             'numpy': '.npy'
-            # HAS TO BE EXTENDED LATER
+            'pytorch': '.pt'# HAS TO BE EXTENDED LATER
         }
     def check_filetype(self, filetype):
         """makes sure that the filetype is recognized"""
