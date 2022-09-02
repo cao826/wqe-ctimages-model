@@ -78,6 +78,7 @@ class Chex8Dataset(Dataset):
         clinical_info_tensor = self.get_clinical_info_tensor(filename)
         label = self.get_label(filename)
         image = read_image(os.path.join(self.path2images, filename))
+        image = self.transforms(image)
         return image, clinical_info, label
 
 if __name__ == 'main':
