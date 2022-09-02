@@ -1,4 +1,5 @@
-"""Module level docstring
+"""
+code for the xray dataset
 """
 import os
 import random
@@ -9,6 +10,17 @@ from PIL import Image
 
 #fix random seed
 torch.manual_seed(0)
+
+condition_label_map = {
+    'Atelectasis': 0,
+    'Cardiomegaly': 1,
+    'Effusion': 2,
+    'Infiltration': 3,
+    'Mass': 4,
+    'Nodule': 5,
+    'Pneumonia': 6,
+    'Pneumothorax': 7,
+}
 
 def read_image(path2image):
     """Reads a stored array as a PyTorch tensor"""
@@ -54,7 +66,8 @@ class Chex8Dataset(Dataset):
         row = self.clinical_data[self.clinical_data["Image Index"] == filename]
         if row.shape[0] != 1:
             raise Exception('Something went wrong')
-        label = row["Finding Labels"].values[0]
+        condition = row["Finding Labels"].values[0]
+        label = condition_to_label_map[condition]
         return label
 
     def get_clinical_info(self, filename):
