@@ -102,7 +102,7 @@ class BackboneGetter():
             raise Exception('Unrecognized backbone model type')
         return load_model(model_info=model_info)
 
-class NlstModel(nn.Module):
+class MultiModel(nn.Module):
     """Model class for binary predction on NLST data"""
     def __init__(self,
                  backbone,
