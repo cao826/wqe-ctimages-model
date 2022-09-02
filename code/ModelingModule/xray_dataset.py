@@ -67,7 +67,7 @@ class Chex8Dataset(Dataset):
         if row.shape[0] != 1:
             raise Exception('Something went wrong')
         condition = row["Finding Labels"].values[0]
-        label = condition_to_label_map[condition]
+        label = condition_label_map[condition]
         return label
 
     def get_clinical_info(self, filename):
