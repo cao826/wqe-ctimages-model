@@ -51,7 +51,7 @@ class Chex8Dataset(Dataset):
 
     def get_label(self, filename):
         """gets the label of a scan slice"""
-        row = self.clinical_data[self.clinical_data["Image Index"]
+        row = self.clinical_data[self.clinical_data["Image Index"]]
         if row.shape[0] != 1:
             raise Exception('Something went wrong')
         label = row["Finding Labels"].values[0]
