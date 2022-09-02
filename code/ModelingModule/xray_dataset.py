@@ -16,7 +16,7 @@ def read_image(path2image):
 
 def get_pngs(path: str):
     """gets the pngs files"""
-    pngs = [filename for filename in os.path.listdir(path) if '.png' in filename]
+    pngs = [filename for filename in os.listdir(path) if '.png' in filename]
     return pngs
 
 def get_pid(filename):
