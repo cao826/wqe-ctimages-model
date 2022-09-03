@@ -102,7 +102,7 @@ class BackboneGetter():
             raise Exception('Unrecognized backbone model type')
         return load_model(model_info=model_info)
 
-class NlstModel(nn.Module):
+class MultiModel(nn.Module):
     """Model class for binary predction on NLST data"""
     def __init__(self,
                  backbone,
@@ -211,7 +211,7 @@ class ModelConstructor():
         """Creates an NlstModel instance with the specifications provided"""
         network_specification = list(nodes_per_layer)
         backbone = self.backbone_getter(model_name=backbone_name)
-        model = NlstModel(
+        model = MultiModel(
                  backbone=backbone,
                  network_specification=network_specification,
                  use_leaky_relu=use_leaky_relu)
