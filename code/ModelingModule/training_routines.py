@@ -14,8 +14,6 @@ def train_on_batch(batch, model, loss_fn, optimizer, debug=False):
     else:
         inputs, clinical_info_batch, labels = batch
     inputs = inputs.cuda()
-    if debug:
-        labels = labels.float()
     if not debug:
         clinical_info_batch = clinical_info_batch.cuda()
     labels = labels.cuda()
