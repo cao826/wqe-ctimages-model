@@ -101,7 +101,8 @@ class NlstDataset(Dataset):
         label = self.get_label(filename)
         path2image = self.get_path_to_filename( filename, label)
         image = read_image(path2image)
-        image = self.transformations(image)
+        if self.transformations:
+            image = self.transformations(image)
         clinical_info = self.get_clinical_info_vector(int(pid))
 
         return image, clinical_info, label
