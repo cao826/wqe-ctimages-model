@@ -36,6 +36,7 @@ def print_training_loss(loss_list, epoch_number=None):
         print(f"Training loss on epoch {epoch_number}: {mean_loss}")
     else:
         print(f"Training loss: {mean_loss}")
+    return mean_loss
 
 def train_one_epoch(model, training_loader,
                     loss_fn, optimizer, epoch_number=None, debug=False):
@@ -47,7 +48,8 @@ def train_one_epoch(model, training_loader,
                                       loss_fn = loss_fn,
                                       optimizer = optimizer,
                                       debug=debug))
-    print_training_loss(losses, epoch_number)
+    loss_value = print_training_loss(losses, epoch_number)
+    return loss_value
 
 def eval_one_batch(batch, model, loss_fn, debug=False):
     """Evaluates the model on one batch of the validation dataloader"""
@@ -79,8 +81,9 @@ def eval_on_dataloader(model, val_loader, loss_fn, epoch_number=None, debug=Fals
                 debug=debug,
             )
         )
-    print_average_validation_loss(val_loss_lst=losses,
+    loss_value = print_average_validation_loss(val_loss_lst=losses,
                                   epoch_number=epoch_number)
+    return loss_value
 
 def print_average_validation_loss(val_loss_lst, epoch_number=None):
     """Prints the average batch loss on val set"""
@@ -89,6 +92,7 @@ def print_average_validation_loss(val_loss_lst, epoch_number=None):
         print(f"Mean validation loss on epoch {epoch_number}: {mean_validation_loss}")
     else:
         print(f"Mean validation loss: {mean_validation_loss}")
+    return mean_validation_loss
 
 def logits_to_preds_cross(logits_tensor):
     """Converts the class scores output by model to class probabilities"""
