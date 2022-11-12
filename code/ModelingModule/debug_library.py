@@ -19,17 +19,17 @@ known_models = {
         ),
     'resnet50': ModelInfo(
         name='resnet50',
-        repo=torchvision_model_repo
+        repo=torchvision_model_repo,
         pretrained=True
         ),
     'resnet18': ModelInfo(
         name='resnet18',
-        repo=torchvision_model_repo
+        repo=torchvision_model_repo,
         pretrained=True
         ),
     'mobilenet': ModelInfo(
         name='mobilenet_v2',
-        repo=torchvision_model_repo
+        repo=torchvision_model_repo,
         pretrianed=True
         ),
     'resnext': ModelInfo(
