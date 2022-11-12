@@ -15,42 +15,34 @@ known_models = {
     'resnet101': ModelInfo(
         name='resnet101',
         repo=torchvision_model_repo,
-        pre_trained=True
         ),
     'resnet50': ModelInfo(
         name='resnet50',
         repo=torchvision_model_repo,
-        pretrained=True
         ),
     'resnet18': ModelInfo(
         name='resnet18',
         repo=torchvision_model_repo,
-        pretrained=True
         ),
     'mobilenet': ModelInfo(
         name='mobilenet_v2',
         repo=torchvision_model_repo,
-        pretrianed=True
         ),
     'resnext': ModelInfo(
         name='resnext50_32x4d',
         repo=torchvision_model_repo,
-        pretrained=True
         ),
     'efficientnet': ModelInfo(
         name='nvidia_efficientnet_b0',
         repo='NVIDIA/DeepLearningExamples:torchhub',
-        pretrained=True
         ),
     'densenet': ModelInfo(
         name='densenet121',
         repo=torchvision_model_repo,
-        pretrained=True
         ),
     'vgg19': ModelInfo(
         name='vgg19',
         repo=torchvision_model_repo,
-        pretrained=True
         )
 }
 
