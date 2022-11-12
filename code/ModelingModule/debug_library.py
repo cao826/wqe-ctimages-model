@@ -39,7 +39,7 @@ known_models = {
         ),
     'efficientnet': ModelInfo(
         name='nvidia_efficientnet_b0',
-        repo='NVIDIA/DeepLearningExamples:torchhub'
+        repo='NVIDIA/DeepLearningExamples:torchhub',
         pretrained=True
         ),
     'densenet': ModelInfo(
