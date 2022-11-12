@@ -15,7 +15,7 @@ known_models = {
     'resnet101': ModelInfo(
         name='resnet101',
         repo=torchvision_model_repo,
-        pretrained=True
+        pre_trained=True
         ),
     'resnet50': ModelInfo(
         name='resnet50',
